@@ -10,33 +10,58 @@ import java.security.SecureClassLoader;
  */
 public class StandardClassLoader extends SecureClassLoader {
 
-    private final static String BASE_SCAN_PACKAGE = "com.qger.java.classloader";
+    public static final String USER_DEFINED_ROOT_PATH
+            = "D:\\programming\\java\\src\\qger\\java-advance\\java-base\\target\\classes\\";
 
-    private final static String CLASS_FILE_SUFFIX = ".class";
+    private static final String LOAD_COMPONENT_PACKAGE_NAME
+            = "com.qger.java.classloader";
 
-    private final String JAR_BASE_PATH;
+    private String jarPath;
 
-    public StandardClassLoader(String jarPath) {
-        this.JAR_BASE_PATH = jarPath;
+    StandardClassLoader(String jarPath) {
+        this.jarPath = jarPath;
     }
 
     @Override
-    protected Class<?> findClass(String s) throws ClassNotFoundException {
-        if (s.contains(BASE_SCAN_PACKAGE)) {
-            return super.loadClass(s);
+    public Class<?> loadClass(final String name) throws ClassNotFoundException {
+        if (!name.startsWith(LOAD_COMPONENT_PACKAGE_NAME)) {
+            return super.loadClass(name);
         }
-        return super.findClass(s);
+        Class<?> clazz = findLoadedClass(name);
+        if (clazz != null) {
+            return clazz;
+        }
+        return findClass(name);
     }
 
-    private byte[] getPendingLoadClassData(String name) throws IOException {
-//        String path = JAR_BASE_PATH + name.replace(".", File.separator) + CLASS_FILE_SUFFIX;
-//
-//        InputStream in = new FileInputStream(path);
-//        OutputStream out = new ByteArrayOutputStream();
-//        byte[] buf = new byte[2048];
-//        int num = 0;
-//        while((num = in.read(buf)) != -1){}
-        throw new RuntimeException("no implementation yet!");
+    @Override
+    protected Class<?> findClass(final String name) throws ClassNotFoundException {
+        if (!name.startsWith(LOAD_COMPONENT_PACKAGE_NAME)) {
+            return super.findClass(name);
+        }
+        byte[] classData = getPendingLoadClassData(name);
+        if (classData == null) {
+            throw new ClassNotFoundException("not found");
+        } else {
+            return defineClass(name, classData, 0, classData.length);
+        }
+    }
+
+    private byte[] getPendingLoadClassData(final String classFullName) {
+        String path = jarPath + classFullName.replace('.', File.separatorChar) + ".class";
+        try {
+            InputStream in = new FileInputStream(path);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buffer = new byte[2048];
+            int num = 0;
+            while ((num = in.read(buffer)) != -1) {
+                out.write(buffer, 0, num);
+            }
+            return out.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
