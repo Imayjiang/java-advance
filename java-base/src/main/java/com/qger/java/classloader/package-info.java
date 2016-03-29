@@ -4,18 +4,18 @@
  *<p>
  * <span>normally,there are three steps to load a class</span>
  * <ol>
- *     <li>find class with the name ,and return the byte array of the class</li>
+ *     <li>find class with specified name ,and return the byte array of the class</li>
  *     <li>define the class with the resulting byte array,which will return a {@link java.lang.Class} type</li>
  *     <li>resolve the class,usually link the specified class to the classLoader</li>
  * </ol>
- * in other words, the {@link java.lang.ClassLoader#loadClass} method is the integration of the above.
+ * in other words, the {@link java.lang.ClassLoader#loadClass} method is the integration of above.
  *</p>
  *
  * <h3>load order</h3>
  * <span>the load order of a class base on <em>Parents Delegation Model</em></span>
  * when loading a class,the current classLoader will delegate to its parent classLoader.
  * when parent classLoader failed,the current then will try to load.
- * see {@link }for more detail
+ * see {@link com.qger.java.classloader.ParentDelegationUseCase}for more detail
  * <p>
  *
  * </p>
