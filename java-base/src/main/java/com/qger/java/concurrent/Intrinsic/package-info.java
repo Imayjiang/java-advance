@@ -5,4 +5,4 @@
  *
  * @author: jiangbo
  */
-package com.qger.java.concurrent.Intrinsic;
+package com.qger.java.concurrent.intrinsic;
