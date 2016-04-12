@@ -1,4 +1,4 @@
-package com.qger.java.network.intrinsic;
+package com.qger.java.network.intrinsic.nio;
 
 import java.io.IOException;
 import java.nio.channels.ServerSocketChannel;
