@@ -22,13 +22,11 @@ public class NioServer {
 
     private ServerSocketChannel serverSocket;
 
-    private Queue queue ;
-
     public NioServer() {
         try {
             serverSocket = ServerSocketChannel.open();
             serverSocket.configureBlocking(false);
-            serverSocket.socket().bind(new InetSocketAddress(8008));
+            serverSocket.bind(new InetSocketAddress(8008));
         } catch (IOException e) {
             try {
                 serverSocket.close();
