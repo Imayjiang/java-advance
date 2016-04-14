@@ -14,22 +14,44 @@ import java.io.InputStreamReader;
 public class JVM {
 
     public static void execute(String projectPath) {
-        String command = "mvn clean compile -f " + projectPath + "-Dmaven.test.skip=true";
+        File file = getProjectMainPom(projectPath);
+        if (file == null || !file.exists()) {
+            return;
+        }
+
+        String absolutePath = file.getAbsolutePath();
+        String command = "mvn clean compile -f" + " " + absolutePath + " " + "-Dmaven.test.skip=true";
 
         Runtime runtime = Runtime.getRuntime();
         try {
-            Process process = runtime.exec(command);
+            String[] cmd = new String[3];
+            cmd[0] = shellExecutor();
+            cmd[1]="/C";
+            cmd[2] = command;
+            Process process = runtime.exec(cmd);
 
             final BufferedReader brInfo
                     = new BufferedReader(new InputStreamReader(process.getInputStream(), "GBK"));
             final BufferedReader brError
                     = new BufferedReader(new InputStreamReader(process.getErrorStream(), "GBK"));
-            while (brError.readLine() != null) {
+            while (brInfo.readLine() != null) {
+                System.out.println(brInfo.readLine());
+            }
+            if(brError.readLine() != null) {
                 System.out.println(brError.readLine());
             }
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public static String shellExecutor() {
+        String os = System.getProperty("os.name");
+        if (os != null && os.startsWith("Windows")) {
+            System.out.println("os.name:" + os);
+            return "cmd.exe";
+        }
+        return "sh";
     }
 
     private static File getProjectMainPom(String projectPath) {
@@ -56,9 +78,8 @@ public class JVM {
 
 
     public static void main(String[] args) {
-
         execute("D:\\programming\\java\\src\\qger\\java-advance");
-
     }
+
 
 }
